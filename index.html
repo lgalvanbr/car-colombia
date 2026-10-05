@@ -6,6 +6,7 @@
 <meta name="description" content="Análisis exploratorio de la contratación y el estado ambiental de las 25 Corporaciones Autónomas Regionales de Colombia, con datos de SECOP II y satélite.">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css">
 <link rel="stylesheet" href="estilo.css">
 <style>
 nav.top{position:sticky;top:0;z-index:30;background:rgba(255,255,255,.92);border-bottom:1px solid transparent;transition:border-color .25s,box-shadow .25s}
@@ -40,6 +41,35 @@ section.alt{background:var(--bg-alt)}
 .carlist .depto{color:var(--ink3);font-size:12.5px;display:block;margin-top:2px}
 .carlist b{font-family:var(--mono);font-variant-numeric:tabular-nums;color:var(--ink)}
 @media(max-width:700px){.carlist li{grid-template-columns:1.6fr 1fr;row-gap:4px}.carlist li span:nth-child(3){display:none}}
+
+.mapshell{display:grid;grid-template-columns:320px 1fr;gap:20px;align-items:start}
+@media(max-width:980px){.mapshell{grid-template-columns:1fr}}
+.mlist{display:flex;flex-direction:column;gap:8px;max-height:calc(100vh - 120px);overflow-y:auto;padding-right:4px;position:sticky;top:88px}
+@media(max-width:980px){.mlist{position:static;max-height:none}}
+.ocard{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px 14px;cursor:pointer;transition:box-shadow .2s var(--ease),border-color .2s,background .2s}
+.ocard:hover{box-shadow:var(--shadow-sm);border-color:var(--border-strong)}
+.ocard.sel{border-color:var(--accent);background:var(--accent-soft);box-shadow:var(--shadow-md)}
+.ocard h3{font-size:14px;line-height:1.3;font-weight:700}
+.ocard .meta{font-size:11.5px;color:var(--ink3);margin-top:5px;display:flex;flex-wrap:wrap;gap:3px 8px}
+.ocard .meta b{color:var(--ink2);font-family:var(--mono);font-weight:600}
+
+.mmain{position:sticky;top:88px}
+.mmap-wrap{border:1px solid var(--border);border-radius:16px;overflow:hidden;box-shadow:var(--shadow-sm);position:relative}
+#carMap{height:460px;width:100%}
+.mtag{position:absolute;left:14px;top:14px;z-index:2;background:#fff;border:1px solid var(--border);border-radius:999px;padding:6px 13px;font:700 12px var(--sans);color:var(--ink2);box-shadow:var(--shadow-sm)}
+.mtag b{color:var(--accent-ink)}
+.marker-dot{width:14px;height:14px;border-radius:50%;background:var(--accent);border:3px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.35);cursor:pointer;transition:transform .2s var(--spring)}
+.marker-dot:hover{transform:scale(1.25)}
+.marker-dot.sel{transform:scale(1.4);box-shadow:0 0 0 4px rgba(37,99,235,.3),0 1px 4px rgba(0,0,0,.35)}
+
+.mdetail{margin-top:16px;background:var(--card);border:1px solid var(--border);border-radius:16px;padding:22px 24px}
+.mdetail h3{font-size:18px;line-height:1.3}
+.mdetail .dmeta{font-size:13px;color:var(--ink3);margin-top:6px}
+.mdetail .kpis{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-top:16px}
+.mdetail .kpis div{background:var(--card);padding:14px 16px}
+.mdetail .kpis b{display:block;font-family:var(--mono);font-size:18px;color:var(--ink)}
+.mdetail .kpis span{font-size:11.5px;color:var(--ink3);display:block;margin-top:3px}
+.mdetail .caveat{font-size:12px;color:var(--ink3);margin-top:16px;line-height:1.6}
 
 .profundiza{display:grid;grid-template-columns:1.3fr 1fr;gap:40px;align-items:start}
 @media(max-width:860px){.profundiza{grid-template-columns:1fr}}
@@ -79,9 +109,24 @@ footer .credit{font-size:13px;color:var(--ink3);margin-top:10px}
   </div>
 </section>
 
+<section class="wrap" id="mapa">
+  <div class="section-head"><span class="k">Resumen</span><h2>Seleccione una corporación y véala en el mapa</h2>
+    <p style="font-size:14px;color:var(--ink2);margin-top:8px;max-width:60ch">Datos de SECOP II (datos.gov.co), consultados en vivo — no es un corte histórico fijo. El marcador va en el centroide del departamento donde opera cada CAR, no en su sede exacta; varias CAR comparten departamento.</p>
+  </div>
+  <div class="mapshell">
+    <div class="mlist" id="lista"></div>
+    <div class="mmain">
+      <div class="mmap-wrap">
+        <span class="mtag" id="mapTag">Colombia</span>
+        <div id="carMap"></div>
+      </div>
+      <div class="mdetail" id="detail"></div>
+    </div>
+  </div>
+</section>
+
 <section class="wrap">
-  <div class="section-head"><span class="k">Resumen</span><h2>Quién contrata más, hoy</h2></div>
-  <p class="lead">Datos de SECOP II (datos.gov.co), consultados en vivo — no es un corte histórico fijo, refleja lo que cada corporación tiene activo ahora mismo. Ordenado por valor contratado.</p>
+  <div class="section-head"><span class="k">Resumen</span><h2>Todas, en una lista</h2></div>
   <ul class="carlist" id="ranking">
     <li class="head"><span>Corporación</span><span>Contratos</span><span>Departamento</span><span>Valor</span></li>
   </ul>
@@ -124,9 +169,92 @@ footer .credit{font-size:13px;color:var(--ink3);margin-top:10px}
   </div>
 </footer>
 
+<script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
 <script>
 function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];});}
 function fmt(v,d){return Number(v).toLocaleString("es-CO",{minimumFractionDigits:d||0,maximumFractionDigits:d||0});}
+
+/* ---- mapa de CAR ---- */
+(function(){
+  var map = new maplibregl.Map({container:"carMap", style:"https://tiles.openfreemap.org/styles/liberty", center:[-74.3,4.5], zoom:4.4, attributionControl:{compact:true}});
+  map.addControl(new maplibregl.NavigationControl(), "top-right");
+  var markers = [], cars = [], ranking = {}, depFeats = {}, bosqueDepto = {}, mineriaDepto = {}, SEL = -1;
+
+  function boundsOf(geom){
+    var b = new maplibregl.LngLatBounds();
+    var polys = geom.type==="Polygon" ? [geom.coordinates] : geom.coordinates;
+    polys.forEach(function(p){ p[0].forEach(function(c){ b.extend(c); }); });
+    return b;
+  }
+
+  Promise.all([
+    fetch("datos/cars.json").then(function(r){return r.json();}),
+    fetch("datos/ranking_cars.json").then(function(r){return r.json();}),
+    fetch("datos/departamentos.json").then(function(r){return r.json();}),
+    fetch("datos/bosque_depto_full.json").then(function(r){return r.json();}),
+    fetch("datos/mineria_depto_full.json").then(function(r){return r.json();})
+  ]).then(function(v){
+    cars = v[0];
+    v[1].forEach(function(r){ ranking[r.sigla] = r; });
+    v[2].features.forEach(function(f){ depFeats[f.properties.codigo] = f; });
+    bosqueDepto = v[3]; mineriaDepto = v[4];
+
+    var host = document.getElementById("lista");
+    cars.slice().sort(function(a,b){ return (ranking[b.sigla]?ranking[b.sigla].valor_M:0) - (ranking[a.sigla]?ranking[a.sigla].valor_M:0); }).forEach(function(c){
+      var i = cars.indexOf(c);
+      var r = ranking[c.sigla] || {contratos:0,valor_M:0};
+      var card = document.createElement("div");
+      card.className = "ocard"; card.dataset.i = i;
+      card.innerHTML = '<h3>'+esc(c.sigla)+'</h3><div class="meta"><span>'+esc(c.departamento)+'</span><span>·</span><span><b>'+fmt(r.contratos)+'</b> contratos</span></div>';
+      card.addEventListener("click", function(){ selectCar(i); });
+      host.appendChild(card);
+    });
+
+    map.on("load", function(){
+      var lbl = map.getStyle().layers.filter(function(l){return l.type==="symbol";})[0]; lbl = lbl && lbl.id;
+      map.addSource("hi", {type:"geojson", data:{type:"FeatureCollection", features:[]}});
+      map.addLayer({id:"hi_f", type:"fill", source:"hi", paint:{"fill-color":"#2563eb", "fill-opacity":.12}}, lbl);
+      map.addLayer({id:"hi_l", type:"line", source:"hi", paint:{"line-color":"#2563eb", "line-width":2.2}}, lbl);
+
+      cars.forEach(function(c, i){
+        var el = document.createElement("div"); el.className = "marker-dot";
+        var mk = new maplibregl.Marker({element: el}).setLngLat([c.lon, c.lat]).addTo(map);
+        el.addEventListener("click", function(ev){ ev.stopPropagation(); selectCar(i); });
+        markers.push(mk);
+      });
+      selectCar(cars.findIndex(function(c){return c.sigla==="Corpocesar";}));
+    });
+  }).catch(function(e){ document.getElementById("detail").innerHTML = "<p class='caveat'>No se pudo cargar el mapa ("+e.message+").</p>"; });
+
+  function selectCar(i){
+    if(i<0) return;
+    var c = cars[i]; SEL = i;
+    document.querySelectorAll(".ocard").forEach(function(el){ el.classList.toggle("sel", +el.dataset.i===i); });
+    markers.forEach(function(mk,k){ mk.getElement().classList.toggle("sel", k===i); });
+    document.getElementById("mapTag").innerHTML = esc(c.sigla)+" · <b>"+esc(c.departamento)+"</b>";
+
+    var feat = depFeats[c.codigo_depto];
+    if(feat){
+      if(map.getSource("hi")) map.getSource("hi").setData({type:"FeatureCollection", features:[feat]});
+      map.fitBounds(boundsOf(feat.geometry), {padding:60, duration:800});
+    }
+
+    var r = ranking[c.sigla] || {contratos:0,valor_M:0};
+    var bosque = bosqueDepto[c.codigo_depto] || {ha:0,poligonos:0};
+    var mineria = mineriaDepto[c.codigo_depto] || {ha:0,poligonos:0};
+    document.getElementById("detail").innerHTML =
+      '<h3>'+esc(c.nombre)+'</h3>'
+      +'<div class="dmeta">NIT '+esc(c.nit)+' · '+esc(c.departamento)+'</div>'
+      +'<div class="kpis">'
+        +'<div><b>'+fmt(r.contratos)+'</b><span>contratos en ejecución</span></div>'
+        +'<div><b>$'+fmt(r.valor_M)+' M</b><span>valor contratado</span></div>'
+        +'<div><b>'+fmt(bosque.ha)+' ha</b><span>bosque perdido en '+esc(c.departamento)+', 2001-2024</span></div>'
+        +'<div><b>'+fmt(mineria.ha)+' ha</b><span>huella minera en '+esc(c.departamento)+', 2017-2025</span></div>'
+      +'</div>'
+      +'<p class="caveat">Bosque y minería son del <b>departamento completo</b> donde opera la corporación, no de su jurisdicción exacta (que puede ser menor o cruzar más de un departamento) — es una aproximación, igual que el marcador en el mapa.</p>';
+  }
+})();
+
 fetch("datos/ranking_cars.json").then(function(r){return r.json();}).then(function(rows){
   var host = document.getElementById("ranking");
   rows.forEach(function(r){
