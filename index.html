@@ -104,7 +104,7 @@ footer .credit{font-size:13px;color:var(--ink3);margin-top:10px}
   <div class="stats" id="stats">
     <div class="stat"><b data-count="31343">0</b><span>contratos en ejecución, 25 CAR</span></div>
     <div class="stat"><b data-count="2702.6" data-decimals="1" data-suffix=" mil M">0</b><span>pesos COP contratados, en ejecución hoy</span></div>
-    <div class="stat"><b data-count="4456776" data-suffix=" ha">0</b><span>de bosque perdidas en Colombia, 2001-2024</span></div>
+    <div class="stat"><b data-count="4556294" data-suffix=" ha">0</b><span>de bosque perdidas en Colombia, 2001-2024</span></div>
     <div class="stat"><b data-count="325944" data-suffix=" ha">0</b><span>de suelo alterado por minería, 2017-2025</span></div>
   </div>
 </section>
@@ -176,7 +176,8 @@ footer .credit{font-size:13px;color:var(--ink3);margin-top:10px}
 <section class="wrap">
   <div class="section-head"><span class="k">Método</span><h2>Qué hay y qué falta</h2></div>
   <p class="lead">Pérdida de bosque: <b>Hansen/UMD/Google/USGS/NASA</b>, 2001-2024, los 32 departamentos. Minería a cielo abierto: clasificación propia sobre <b>Sentinel-2</b>, 2017-2025, nacional. Contratos: <b>SECOP II</b>, 25 CAR identificadas por su clasificación de entidad y por búsqueda directa de cada corporación conocida (Valle del Cauca -CVC-, Tolima -Cortolima-, Caldas -Corpocaldas- y La Macarena -Cormacarena- no aparecen hoy con contratos activos bajo ninguna búsqueda que hicimos; no descartamos que exista un NIT que no hemos encontrado).</p>
-  <div class="pendiente"><b>En este momento está corriendo</b> el modelo de zonas inundables (HAND) para los 1.108 municipios del país — hoy solo existe para los 24 municipios de Cesar. Cuando esté listo, cada corporación va a tener su propio mapa como el de Corpocesar. Esta página se actualiza a mano, no sola; vuelva en unos días para ver el avance.</p>
+  <div class="pendiente"><b>Corregido el 5 de octubre de 2026:</b> encontramos y arreglamos un error real en el script que descarga la pérdida de bosque (Hansen) — la tesela de longitud estaba fija en "080W" para todo el país, así que cualquier zona más al oriente de esa franja (parte de Guainía y Vichada, en la frontera con Venezuela) se quedaba sin datos. Guainía pasó de 3.189 a 39.540 ha; Vichada de 46.196 a 109.362 ha. Lo detectamos cruzando nuestros números contra el API de <a href="https://globalnaturewatch.org" target="_blank" rel="noreferrer">Global Forest Watch</a> (misma fuente Hansen, consultada en vivo) — el resto del país ya estaba dentro de un rango razonable (1,1x a 1,8x frente a GFW, por diferencias normales de método) y no lo tocamos.</div>
+  <div class="pendiente" style="margin-top:12px"><b>El modelo de zonas inundables (HAND)</b> ya corrió para los 1.108 municipios del país (antes solo existía para Cesar) — falta conectarlo al mapa de cada corporación, como ya está en Corpocesar.</div>
 </section>
 
 <footer>
