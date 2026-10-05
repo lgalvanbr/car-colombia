@@ -156,7 +156,24 @@ footer .credit{font-size:13px;color:var(--ink3);margin-top:10px}
   </div>
 </section>
 
-<section class="alt wrap">
+<section class="alt">
+  <div class="wrap">
+    <div class="section-head"><span class="k">Profundización</span><h2>Lo que detectamos, contra el registro oficial</h2></div>
+    <div class="profundiza">
+      <div>
+        <p class="lead">Cruzamos la huella minera que detectamos por satélite contra el <b>RUCOM</b> (Registro Único de Comercializadores de Minerales, ANM) — 12.914 registros nacionales con el municipio y el expediente del título de cada explotador autorizado.</p>
+        <p class="lead"><b>Antes de leer la lista: un título NO es un área.</b> Barrancas (La Guajira) tiene 50.066 ha detectadas y solo 4 expedientes RUCOM — pero esos 4 expedientes son <b>todos El Cerrejón</b>, una de las minas de carbón legales más grandes del mundo. Pocos títulos no significa ilegalidad; puede ser una sola concesión legal enorme. Por eso no mostramos un "ranking de ilegalidad" con esos casos.</p>
+        <p class="lead">Lo que sí es una señal más limpia: municipios con huella minera real detectada (≥20 ha) y <b>cero</b> registros en RUCOM — ningún comercializador autorizado encontrado, de ningún tamaño. Son 13 en todo el país, y coinciden con corredores de minería informal ya documentados por periodismo y organizaciones (Chocó, el Pacífico de Nariño, la ciénaga de Ayapel) — una consistencia que no fabricamos, solo encontramos.</p>
+      </div>
+      <div>
+        <span class="rank-title">Huella minera detectada sin ningún registro RUCOM</span>
+        <ul class="rank" id="rankSinRegistro"></ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="wrap">
   <div class="section-head"><span class="k">Método</span><h2>Qué hay y qué falta</h2></div>
   <p class="lead">Pérdida de bosque: <b>Hansen/UMD/Google/USGS/NASA</b>, 2001-2024, los 32 departamentos. Minería a cielo abierto: clasificación propia sobre <b>Sentinel-2</b>, 2017-2025, nacional. Contratos: <b>SECOP II</b>, 25 CAR identificadas por su clasificación de entidad y por búsqueda directa de cada corporación conocida (Valle del Cauca -CVC-, Tolima -Cortolima-, Caldas -Corpocaldas- y La Macarena -Cormacarena- no aparecen hoy con contratos activos bajo ninguna búsqueda que hicimos; no descartamos que exista un NIT que no hemos encontrado).</p>
   <div class="pendiente"><b>En este momento está corriendo</b> el modelo de zonas inundables (HAND) para los 1.108 municipios del país — hoy solo existe para los 24 municipios de Cesar. Cuando esté listo, cada corporación va a tener su propio mapa como el de Corpocesar. Esta página se actualiza a mano, no sola; vuelva en unos días para ver el avance.</p>
@@ -179,6 +196,12 @@ function fmt(v,d){return Number(v).toLocaleString("es-CO",{minimumFractionDigits
   var map = new maplibregl.Map({container:"carMap", style:"https://tiles.openfreemap.org/styles/liberty", center:[-74.3,4.5], zoom:4.4, attributionControl:{compact:true}});
   map.addControl(new maplibregl.NavigationControl(), "top-right");
   var markers = [], cars = [], ranking = {}, depFeats = {}, bosqueDepto = {}, mineriaDepto = {}, SEL = -1;
+  var DTIPOS = {perdida_bosque:["Pérdida de bosque (Hansen)","#c0362c"], suelo_alterado_mineria:["Huella de minería (Sentinel-2)","#8a5a2b"]};
+  var danoCache = {};
+  function danoDe(codigoDepto){
+    if(danoCache[codigoDepto]) return Promise.resolve(danoCache[codigoDepto]);
+    return fetch("datos/dano_depto/"+codigoDepto+".json").then(function(r){return r.json();}).then(function(d){ danoCache[codigoDepto]=d.features; return d.features; }).catch(function(){ return []; });
+  }
 
   function boundsOf(geom){
     var b = new maplibregl.LngLatBounds();
@@ -213,8 +236,18 @@ function fmt(v,d){return Number(v).toLocaleString("es-CO",{minimumFractionDigits
     map.on("load", function(){
       var lbl = map.getStyle().layers.filter(function(l){return l.type==="symbol";})[0]; lbl = lbl && lbl.id;
       map.addSource("hi", {type:"geojson", data:{type:"FeatureCollection", features:[]}});
-      map.addLayer({id:"hi_f", type:"fill", source:"hi", paint:{"fill-color":"#2563eb", "fill-opacity":.12}}, lbl);
+      map.addLayer({id:"hi_f", type:"fill", source:"hi", paint:{"fill-color":"#2563eb", "fill-opacity":.08}}, lbl);
       map.addLayer({id:"hi_l", type:"line", source:"hi", paint:{"line-color":"#2563eb", "line-width":2.2}}, lbl);
+
+      map.addSource("dano", {type:"geojson", data:{type:"FeatureCollection", features:[]}});
+      var col = ["match", ["get","tipo"]]; Object.keys(DTIPOS).forEach(function(t){ col.push(t, DTIPOS[t][1]); }); col.push("#999");
+      map.addLayer({id:"dano_f", type:"fill", source:"dano", paint:{"fill-color":col, "fill-opacity":.6}}, lbl);
+      map.on("click", "dano_f", function(ev){
+        var p = ev.features[0].properties;
+        document.getElementById("danoInfo").textContent = (DTIPOS[p.tipo]?DTIPOS[p.tipo][0]:p.tipo)+" · "+p.anio+" · "+fmt(p.area_ha,1)+" ha";
+      });
+      map.on("mouseenter","dano_f",function(){map.getCanvas().style.cursor="pointer";});
+      map.on("mouseleave","dano_f",function(){map.getCanvas().style.cursor="";});
 
       cars.forEach(function(c, i){
         var el = document.createElement("div"); el.className = "marker-dot";
@@ -239,6 +272,8 @@ function fmt(v,d){return Number(v).toLocaleString("es-CO",{minimumFractionDigits
       map.fitBounds(boundsOf(feat.geometry), {padding:60, duration:800});
     }
 
+    if(map.getSource("dano")) map.getSource("dano").setData({type:"FeatureCollection", features:[]});
+
     var r = ranking[c.sigla] || {contratos:0,valor_M:0};
     var bosque = bosqueDepto[c.codigo_depto] || {ha:0,poligonos:0};
     var mineria = mineriaDepto[c.codigo_depto] || {ha:0,poligonos:0};
@@ -251,7 +286,16 @@ function fmt(v,d){return Number(v).toLocaleString("es-CO",{minimumFractionDigits
         +'<div><b>'+fmt(bosque.ha)+' ha</b><span>bosque perdido en '+esc(c.departamento)+', 2001-2024</span></div>'
         +'<div><b>'+fmt(mineria.ha)+' ha</b><span>huella minera en '+esc(c.departamento)+', 2017-2025</span></div>'
       +'</div>'
-      +'<p class="caveat">Bosque y minería son del <b>departamento completo</b> donde opera la corporación, no de su jurisdicción exacta (que puede ser menor o cruzar más de un departamento) — es una aproximación, igual que el marcador en el mapa.</p>';
+      +'<div class="legend2" style="margin-top:14px;display:flex;gap:14px;font-size:11.5px;color:var(--ink3)"><span><i style="display:inline-block;width:10px;height:10px;border-radius:3px;background:#c0362c;margin-right:5px"></i>Bosque perdido</span><span><i style="display:inline-block;width:10px;height:10px;border-radius:3px;background:#8a5a2b;margin-right:5px"></i>Huella minera</span></div>'
+      +'<p class="dmeta" id="danoInfo" style="margin-top:8px">Cargando capa de daño…</p>'
+      +'<p class="caveat">Bosque y minería son del <b>departamento completo</b> donde opera la corporación, no de su jurisdicción exacta (que puede ser menor o cruzar más de un departamento) — es una aproximación, igual que el marcador en el mapa. Solo se muestran polígonos ≥10 ha (los más pequeños existen en la base pero no se cargan aquí por peso).</p>';
+
+    danoDe(c.codigo_depto).then(function(feats){
+      if(SEL !== i) return; // el usuario ya eligio otra mientras cargaba
+      if(map.getSource("dano")) map.getSource("dano").setData({type:"FeatureCollection", features: feats});
+      var el = document.getElementById("danoInfo");
+      if(el) el.textContent = feats.length ? "Pulse un polígono rojo (bosque) o café (minería) para ver su año y área." : "Sin polígonos ≥10 ha en este departamento.";
+    });
   }
 })();
 
@@ -276,6 +320,15 @@ function pintarRank(id, archivo){
 }
 pintarRank("rankBosque", "datos/bosque_depto.json");
 pintarRank("rankMineria", "datos/mineria_depto.json");
+
+fetch("datos/mineria_sin_registro.json").then(function(r){return r.json();}).then(function(rows){
+  var host = document.getElementById("rankSinRegistro");
+  rows.forEach(function(r){
+    var li = document.createElement("li");
+    li.innerHTML = "<span>"+esc(r.nombre)+"</span><b>"+fmt(r.ha_detectada)+" ha</b>";
+    host.appendChild(li);
+  });
+}).catch(function(){ document.getElementById("rankSinRegistro").innerHTML = "<li>No se pudo cargar.</li>"; });
 
 /* contadores animados */
 var reduced = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
