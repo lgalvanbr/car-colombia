@@ -1,0 +1,116 @@
+[
+ {
+  "sigla": "CAR Cundinamarca",
+  "contratos": 14524,
+  "valor_M": 1059200.0,
+  "departamento": "Cundinamarca"
+ },
+ {
+  "sigla": "Corpamag",
+  "contratos": 1063,
+  "valor_M": 434007.5,
+  "departamento": "Magdalena"
+ },
+ {
+  "sigla": "CDMB",
+  "contratos": 768,
+  "valor_M": 138062.5,
+  "departamento": "Santander"
+ },
+ {
+  "sigla": "Corpocesar",
+  "contratos": 550,
+  "valor_M": 127632.5,
+  "departamento": "Cesar"
+ },
+ {
+  "sigla": "CSB",
+  "contratos": 468,
+  "valor_M": 90906.0,
+  "departamento": "Bolívar"
+ },
+ {
+  "sigla": "EPA Buenaventura",
+  "contratos": 181,
+  "valor_M": 62446.2,
+  "departamento": "Valle del Cauca"
+ },
+ {
+  "sigla": "Corantioquia",
+  "contratos": 539,
+  "valor_M": 48601.4,
+  "departamento": "Antioquia"
+ },
+ {
+  "sigla": "Corponor",
+  "contratos": 1245,
+  "valor_M": 48445.6,
+  "departamento": "Norte de Santander"
+ },
+ {
+  "sigla": "CAM",
+  "contratos": 569,
+  "valor_M": 45997.2,
+  "departamento": "Huila"
+ },
+ {
+  "sigla": "CVS",
+  "contratos": 51,
+  "valor_M": 44463.1,
+  "departamento": "Córdoba"
+ },
+ {
+  "sigla": "Corponariño",
+  "contratos": 2520,
+  "valor_M": 41547.3,
+  "departamento": "Nariño"
+ },
+ {
+  "sigla": "Carder",
+  "contratos": 1187,
+  "valor_M": 39757.5,
+  "departamento": "Risaralda"
+ },
+ {
+  "sigla": "Cardique",
+  "contratos": 96,
+  "valor_M": 33444.6,
+  "departamento": "Bolívar"
+ },
+ {
+  "sigla": "CDA",
+  "contratos": 209,
+  "valor_M": 32129.9,
+  "departamento": "Guainía"
+ },
+ {
+  "sigla": "DADSA",
+  "contratos": 597,
+  "valor_M": 16254.7,
+  "departamento": "Magdalena"
+ },
+ {
+  "sigla": "Corpoguajira",
+  "contratos": 286,
+  "valor_M": 14989.5,
+  "departamento": "La Guajira"
+ },
+ {
+  "sigla": "Corpochivor",
+  "contratos": 5,
+  "valor_M": 11405.0,
+  "departamento": "Boyacá"
+ },
+ {
+  "sigla": "Coralina",
+  "contratos": 271,
+  "valor_M": 9886.3,
+  "departamento": "San Andrés, Providencia y Santa Catalina"
+ },
+ {
+  "sigla": "Corpoguavio",
+  "contratos": 357,
+  "valor_M": 6138.7,
+  "departamento": "Cundinamarca"
+ }
+]

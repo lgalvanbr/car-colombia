@@ -1,0 +1,21 @@
+[
+  {"nit":"892301483","nombre":"CORPOCESAR","sigla":"Corpocesar","departamento":"Cesar"},
+  {"nit":"800252037","nombre":"CORPORACIÓN AUTONOMA REGIONAL DE CHIVOR","sigla":"Corpochivor","departamento":"Boyacá"},
+  {"nit":"899999062","nombre":"CORPORACION AUTONOMA REGIONAL DE CUNDINAMARCA","sigla":"CAR Cundinamarca","departamento":"Cundinamarca"},
+  {"nit":"890505253","nombre":"CORPORACION AUTONOMA REGIONAL DE LA FRONTERA NORORIENTAL","sigla":"Corponor","departamento":"Norte de Santander"},
+  {"nit":"892115314","nombre":"CORPORACION AUTONOMA REGIONAL DE LA GUAJIRA","sigla":"Corpoguajira","departamento":"La Guajira"},
+  {"nit":"800255580","nombre":"CORPORACION AUTONOMA REGIONAL DEL ALTO MAGDALENA","sigla":"CAM","departamento":"Huila"},
+  {"nit":"800254453","nombre":"CORPORACIÓN AUTÓNOMA REGIONAL DEL CANAL DEL DIQUE","sigla":"Cardique","departamento":"Bolívar"},
+  {"nit":"811000231","nombre":"CORPORACIÓN AUTÓNOMA REGIONAL DEL CENTRO DE ANTIOQUIA","sigla":"Corantioquia","departamento":"Antioquia"},
+  {"nit":"832000171","nombre":"CORPORACION AUTONOMA REGIONAL DEL GUAVIO","sigla":"Corpoguavio","departamento":"Cundinamarca"},
+  {"nit":"800099287","nombre":"CORPORACION AUTONOMA REGIONAL DEL MAGDALENA","sigla":"Corpamag","departamento":"Magdalena"},
+  {"nit":"891000627","nombre":"CORPORACIÓN AUTÓNOMA REGIONAL DE LOS VALLES DEL SINÚ Y DEL SAN JORGE","sigla":"CVS","departamento":"Córdoba"},
+  {"nit":"891222322","nombre":"CORPORACION AUTONOMA REGIONAL DE NARIÑO","sigla":"Corponariño","departamento":"Nariño"},
+  {"nit":"891410354","nombre":"CORPORACION AUTONOMA REGIONAL DE RISARALDA","sigla":"Carder","departamento":"Risaralda"},
+  {"nit":"890201573","nombre":"CORPORACIÓN AUTÓNOMA REGIONAL PARA LA DEFENSA DE LA MESETA DE BUCARAMANGA","sigla":"CDMB","departamento":"Santander"},
+  {"nit":"827000031","nombre":"CORPORACION PARA EL DESARROLLO SOSTENIBLE DEL ARCHIPIÉLAGO DE SAN ANDRÉS, PROVIDENCIA Y SANTA CATALINA","sigla":"Coralina","departamento":"San Andrés, Providencia y Santa Catalina"},
+  {"nit":"838000009","nombre":"CORPORACION PARA EL DESARROLLO SOSTENIBLE DEL NORTE Y DEL ORIENTE AMAZÓNICO","sigla":"CDA","departamento":"Guainía"},
+  {"nit":"806000327","nombre":"CSB","sigla":"CSB","departamento":"Bolívar"},
+  {"nit":"8190063866","nombre":"DEPARTAMENTO ADMINISTRATIVO DISTRITAL DE SOSTENIBILIDAD AMBIENTAL","sigla":"DADSA","departamento":"Magdalena"},
+  {"nit":"900816913","nombre":"ESTABLECIMIENTO PÚBLICO AMBIENTAL DEL DISTRITO DE BUENAVENTURA","sigla":"EPA Buenaventura","departamento":"Valle del Cauca"}
+]
