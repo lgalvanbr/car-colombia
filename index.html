@@ -41,6 +41,14 @@ section.alt{background:var(--bg-alt)}
 .carlist b{font-family:var(--mono);font-variant-numeric:tabular-nums;color:var(--ink)}
 @media(max-width:700px){.carlist li{grid-template-columns:1.6fr 1fr;row-gap:4px}.carlist li span:nth-child(3){display:none}}
 
+.profundiza{display:grid;grid-template-columns:1.3fr 1fr;gap:40px;align-items:start}
+@media(max-width:860px){.profundiza{grid-template-columns:1fr}}
+.rank{margin:0;padding:0;border-top:1px solid var(--border)}
+.rank li{list-style:none;display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);font-size:14px}
+.rank li b{font-family:var(--mono);font-weight:600;color:var(--ink);white-space:nowrap;font-variant-numeric:tabular-nums}
+.rank li span{color:var(--ink2)}
+.rank-title{font:700 11px var(--sans);text-transform:uppercase;letter-spacing:.06em;color:var(--ink3);margin-bottom:6px;display:block}
+
 .pendiente{border-left:3px solid var(--warn,#c0362c);background:var(--accent-soft);padding:16px 20px;border-radius:0 10px 10px 0;font-size:14px;color:var(--ink2);line-height:1.6;margin-top:20px}
 .pendiente b{color:var(--ink)}
 
@@ -79,6 +87,30 @@ footer .credit{font-size:13px;color:var(--ink3);margin-top:10px}
   </ul>
 </section>
 
+<section class="alt">
+  <div class="wrap">
+    <div class="section-head"><span class="k">Profundización</span><h2>Pérdida de bosque por departamento</h2></div>
+    <div class="profundiza">
+      <p class="lead">Caquetá (760.130 ha), Meta (638.434 ha) y Antioquia (490.056 ha) encabezan la pérdida de bosque acumulada 2001-2024 — consistente con la frontera agrícola de la Amazonía y la Orinoquía, no con los departamentos donde están las CAR más grandes en contratación. Cesar, con toda su contratación de restauración, ocupa el puesto 10 nacional.</p>
+      <div>
+        <span class="rank-title">Top 10 departamentos, bosque perdido 2001-2024</span>
+        <ul class="rank" id="rankBosque"></ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="wrap">
+  <div class="section-head"><span class="k">Profundización</span><h2>Minería a cielo abierto por departamento</h2></div>
+  <div class="profundiza">
+    <p class="lead">Cesar encabeza la huella minera nacional detectada (104.539 ha), seguido de cerca por La Guajira (86.722 ha, donde opera El Cerrejón) y Antioquia (51.697 ha). Juntos estos tres departamentos concentran más de dos tercios de toda la minería a cielo abierto que detectamos en el país.</p>
+    <div>
+      <span class="rank-title">Top 10 departamentos, huella minera 2017-2025</span>
+      <ul class="rank" id="rankMineria"></ul>
+    </div>
+  </div>
+</section>
+
 <section class="alt wrap">
   <div class="section-head"><span class="k">Método</span><h2>Qué hay y qué falta</h2></div>
   <p class="lead">Pérdida de bosque: <b>Hansen/UMD/Google/USGS/NASA</b>, 2001-2024, los 32 departamentos. Minería a cielo abierto: clasificación propia sobre <b>Sentinel-2</b>, 2017-2025, nacional. Contratos: <b>SECOP II</b>, filtrados por entidades clasificadas como "Corporación Autónoma" en el sector "Ambiente y Desarrollo Sostenible" — pueden existir CAR activas que no aparezcan aquí por una clasificación distinta en los datos abiertos; lo iremos corrigiendo.</p>
@@ -103,6 +135,19 @@ fetch("datos/ranking_cars.json").then(function(r){return r.json();}).then(functi
     host.appendChild(li);
   });
 }).catch(function(e){ document.getElementById("ranking").innerHTML = "<li>No se pudo cargar el ranking ("+e.message+").</li>"; });
+
+function pintarRank(id, archivo){
+  fetch(archivo).then(function(r){return r.json();}).then(function(rows){
+    var host = document.getElementById(id);
+    rows.forEach(function(r){
+      var li = document.createElement("li");
+      li.innerHTML = "<span>"+esc(r.depto)+"</span><b>"+fmt(r.ha)+" ha</b>";
+      host.appendChild(li);
+    });
+  }).catch(function(){ document.getElementById(id).innerHTML = "<li>No se pudo cargar.</li>"; });
+}
+pintarRank("rankBosque", "datos/bosque_depto.json");
+pintarRank("rankMineria", "datos/mineria_depto.json");
 
 /* contadores animados */
 var reduced = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
