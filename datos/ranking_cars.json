@@ -12,6 +12,12 @@
   "departamento": "Magdalena"
  },
  {
+  "sigla": "Codechocó",
+  "contratos": 379,
+  "valor_M": 220194.9,
+  "departamento": "Chocó"
+ },
+ {
   "sigla": "CDMB",
   "contratos": 768,
   "valor_M": 138062.5,
@@ -28,6 +34,12 @@
   "contratos": 468,
   "valor_M": 90906.0,
   "departamento": "Bolívar"
+ },
+ {
+  "sigla": "Corpoamazonia",
+  "contratos": 2260,
+  "valor_M": 83822.5,
+  "departamento": "Putumayo"
  },
  {
   "sigla": "EPA Buenaventura",
@@ -78,10 +90,34 @@
   "departamento": "Bolívar"
  },
  {
+  "sigla": "CAS",
+  "contratos": 942,
+  "valor_M": 32157.1,
+  "departamento": "Santander"
+ },
+ {
   "sigla": "CDA",
   "contratos": 209,
   "valor_M": 32129.9,
   "departamento": "Guainía"
+ },
+ {
+  "sigla": "Corpourabá",
+  "contratos": 501,
+  "valor_M": 22502.7,
+  "departamento": "Antioquia"
+ },
+ {
+  "sigla": "Corporinoquia",
+  "contratos": 318,
+  "valor_M": 19494.6,
+  "departamento": "Arauca"
+ },
+ {
+  "sigla": "CRQ",
+  "contratos": 1457,
+  "valor_M": 19102.6,
+  "departamento": "Quindío"
  },
  {
   "sigla": "DADSA",
