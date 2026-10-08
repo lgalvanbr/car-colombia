@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Visor nacional · Corporaciones Ambientales</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css">
+<link rel="stylesheet" href="hud.css">
+<style>
+.hud-timeline{position:absolute;left:12px;right:362px;bottom:12px;z-index:3;background:#fff;border:1px solid var(--border);border-radius:12px;box-shadow:0 4px 16px -4px rgba(15,17,26,.12);padding:14px 18px}
+.hud-panel.collapsed ~ .hud-timeline{right:12px}
+.tl-top{display:flex;align-items:center;gap:14px;margin-bottom:10px}
+.tl-play{width:34px;height:34px;border-radius:50%;background:var(--accent);color:#fff;border:0;display:grid;place-items:center;cursor:pointer;flex:none;transition:background .15s,transform .15s var(--spring)}
+.tl-play:hover{background:var(--accent-ink)}
+.tl-play:active{transform:scale(.94)}
+.tl-year{font:800 22px var(--display);color:var(--ink);min-width:52px;font-variant-numeric:tabular-nums}
+.tl-stat{font:600 12.5px var(--sans);color:var(--ink2)}
+.tl-spacer{flex:1}
+input[type=range]#tlRange{width:100%;accent-color:var(--accent);height:22px}
+.tl-ticks{display:flex;justify-content:space-between;font:600 10.5px var(--mono);color:var(--ink3);margin-top:2px;padding:0 2px}
+.cargando{position:absolute;left:14px;bottom:100px;z-index:4;background:#fff;border:1px solid var(--border);border-radius:10px;padding:8px 14px;font:600 12px var(--sans);color:var(--ink2);box-shadow:var(--shadow-sm);display:none;align-items:center;gap:8px}
+.cargando.on{display:flex}
+.cargando .sp{width:12px;height:12px;border-radius:50%;border:2px solid var(--border);border-top-color:var(--accent);animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+<div class="hud">
+  <div id="map"></div>
+
+  <div class="hud-top">
+    <div class="brand">
+      <svg viewBox="0 0 200 220" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path d="M100 8C60 70 30 108 30 148a70 70 0 00140 0c0-40-30-78-70-140z" stroke="#2563eb" stroke-width="10"/>
+        <path d="M62 140c8-34 34-52 62-46-20 4-36 18-42 40-18 10-20 20-20 20s-4-10 0-14z" fill="#16a34a"/>
+      </svg>
+      <h1>Visor nacional · daño ambiental e infraestructura</h1>
+    </div>
+    <div class="sep"></div>
+    <div class="hud-coords"><span><b id="hcLat">—</b> lat</span><span><b id="hcLon">—</b> lon</span><span>z<b id="hcZoom">—</b></span></div>
+    <div class="hud-spacer"></div>
+    <button class="hud-iconbtn" id="panelToggle" title="Mostrar/ocultar panel" aria-label="Mostrar/ocultar panel" aria-expanded="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M15 4v16"/></svg>
+    </button>
+  </div>
+
+  <div class="cargando" id="cargando"><span class="sp"></span><span id="cargandoTxt">Cargando departamento…</span></div>
+
+  <aside class="hud-panel" id="panel">
+    <div class="hud-panel-scroll">
+      <div class="hud-sec"><h3>En esta vista</h3><div class="kpis" id="kpis"></div></div>
+      <div class="hud-sec"><h3>Capas</h3><div id="layers"></div></div>
+      <div class="hud-sec"><h3 id="infoT">Detalle</h3><div id="info">Pulse un polígono o un punto para ver su información.</div></div>
+      <div class="hud-sec nota"><b>Método</b><br>Bosque y minería se cargan por departamento a medida que recorre el mapa (archivos propios, no un servidor en vivo) — por eso al moverse rápido puede ver un instante de carga. Derrumbes: <b>Servicio Geológico Colombiano</b>, inventario nacional de movimientos en masa (puntos, sin fecha exacta para la mayoría de registros históricos). Áreas protegidas: <b>RUNAP</b> (Parques Nacionales Naturales), geometría simplificada para que cargue rápido — los límites exactos pueden variar un poco. Sitios de disposición final: <b>Superservicios</b>, solo sitios activos "En Operación"; sin coordenada propia en el registro oficial, así que se ubican en el centroide del municipio, no en el punto exacto del relleno.</div>
+    </div>
+  </aside>
+
+  <div class="hud-timeline">
+    <div class="tl-top">
+      <button class="tl-play" id="tlPlay" aria-label="Reproducir"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></button>
+      <div class="tl-year" id="tlYear">2024</div>
+      <div class="tl-stat" id="tlStat"></div>
+      <div class="tl-spacer"></div>
+      <span class="nota">Bosque: acumulado hasta el año · minería: huella de ese año</span>
+    </div>
+    <input type="range" id="tlRange" min="2001" max="2024" value="2024" step="1">
+    <div class="tl-ticks" id="tlTicks"></div>
+  </div>
+</div>
+<script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
+<script src="nacional.js"></script>
+</body>
+</html>
